@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace GameHackMan
 {
@@ -14,7 +15,9 @@ namespace GameHackMan
         private HackMan _hackMan;
         public static readonly int SCREEN_HEIGHT = 600;
         public static readonly int SCREEN_WIDTH = 800;
-    
+        public static readonly int TILE_SIZE = 40;
+        private List<Food> _food;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);     //initialising the value in the constructor (Game1)
@@ -22,7 +25,38 @@ namespace GameHackMan
             _graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";          //the place from wich i take all content for my game
-            _hackMan = new HackMan();            //while creating new game we create new hackman object
+            _food = new List<Food>();
+            ReadMap();
+        }
+
+        private void ReadMap()
+        {
+            var map = new string[]
+            {
+                "####################",
+                "#............#.....#",
+                "#........P...#...#.#",
+                "#............#...#.#",
+                "#............#...#.#",
+                "#............#####.#",
+                "#....#.............#",
+                "#....#.............#",
+                "#....####.......####",
+                "#.........###......#",
+                "#.......#.###......#",
+                "#.......#..........#",
+                "#..................#",
+                "#...........#......#",
+                "####################"
+            };
+            for (int y = 0; y < map.Length; y++)
+            {
+                for (int x = 0; x < map[y].Length; x++)
+                {
+                    if (map[y][x] == 'P') _hackMan = new HackMan(x, y);
+                    else if (map[y][x] == '.') _food.Add(new Food(x, y)); //many wallllllllz neeeeeeeeded
+                }
+            }
         }
 
         /// <summary>
@@ -50,6 +84,10 @@ namespace GameHackMan
 
             // TODO: use this.Content to load your game content here
             _hackMan.LoadContent(Content);      //we have to give some kind of value to method, so since that object is the whole game we give the method itself, in this case this
+            foreach (var f in _food)
+            {
+                f.LoadContent(Content);
+            }
         }
 
         /// <summary>
@@ -87,9 +125,14 @@ namespace GameHackMan
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+
+            foreach (var f in _food)
+            {
+                f.Draw(_spriteBatch);
+            }
             _hackMan.Draw(_spriteBatch);
             _spriteBatch.End();
-
+    
             base.Draw(gameTime);
         }
     }

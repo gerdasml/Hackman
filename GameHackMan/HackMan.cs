@@ -12,8 +12,29 @@ namespace GameHackMan
 {
     class HackMan
     {
-        private Texture2D _texture;
+        enum Direction
+        {
+            LEFT,
+            RIGHT,
+            UP,
+            DOWN
+        }
+        private Direction _direction;
+        private Dictionary<Direction, Texture2D> _textures;
         private Vector2 _position;
+        private int _speed = 1;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public HackMan(int x, int y)
+        {
+            _textures = new Dictionary<Direction, Texture2D>();
+            _position = new Vector2();
+            _position.X = x * Game1.TILE_SIZE;
+            _position.Y = y * Game1.TILE_SIZE;
+
+        }
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -24,7 +45,8 @@ namespace GameHackMan
         public void Initialize()
         {
             // TODO: Add your initialization logic here
-            _position = Vector2.Zero;        //position = new Vector2(0,0);
+            //_position = Vector2.Zero;        //position = new Vector2(0,0);
+            _direction = Direction.RIGHT;
         }
 
         /// <summary>
@@ -34,7 +56,10 @@ namespace GameHackMan
         public void LoadContent(ContentManager content)       //since Content cannot be seen from class Game, so we have to give a perameter to fix this problem
         {
             // TODO: use this.Content to load your game content here
-            _texture = content.Load<Texture2D>("Left");     //we're using specificly the Content from class Game
+            _textures.Add(Direction.RIGHT, content.Load<Texture2D>("Hackman_right"));
+            _textures.Add(Direction.LEFT, content.Load<Texture2D>("Hackman_left"));
+            _textures.Add(Direction.UP, content.Load<Texture2D>("Hackman_up"));
+            _textures.Add(Direction.DOWN, content.Load<Texture2D>("Hackman_down"));
         }
 
         /// <summary>
@@ -46,13 +71,22 @@ namespace GameHackMan
         {
             // TODO: Add your update logic here
             if (Keyboard.GetState().IsKeyDown(Keys.Up) == true)
-                _position.Y -= 10;
+                _direction = Direction.UP;
             else if (Keyboard.GetState().IsKeyDown(Keys.Down) == true)
-                _position.Y += 10;
+                _direction = Direction.DOWN;
             else if (Keyboard.GetState().IsKeyDown(Keys.Right) == true)
-                _position.X += 10;
+                _direction = Direction.RIGHT;
             else if (Keyboard.GetState().IsKeyDown(Keys.Left) == true)
-                _position.X -= 10;
+                 _direction = Direction.LEFT;
+
+            if (_direction == Direction.UP)
+                _position.Y -= _speed;
+            else if (_direction == Direction.DOWN)
+                _position.Y += _speed;
+            else if (_direction == Direction.RIGHT)
+                _position.X += _speed;
+            else if (_direction == Direction.LEFT)
+                _position.X -= _speed;
 
             if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH;
             if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT;
@@ -67,7 +101,7 @@ namespace GameHackMan
         public void Draw(SpriteBatch spriteBatch)
         {
             // TODO: Add your drawing code here
-            spriteBatch.Draw(_texture, destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, 100, 100));
+            spriteBatch.Draw(_textures[_direction], destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE));
         }
     }
 }
