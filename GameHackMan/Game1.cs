@@ -17,6 +17,7 @@ namespace GameHackMan
         public static readonly int SCREEN_WIDTH = 800;
         public static readonly int TILE_SIZE = 40;
         private List<Food> _food;
+        private List<Wall> _wall;
 
         public Game1()
         {
@@ -25,36 +26,22 @@ namespace GameHackMan
             _graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";          //the place from wich i take all content for my game
+            _wall = new List<Wall>();
             _food = new List<Food>();
             ReadMap();
         }
 
         private void ReadMap()
         {
-            var map = new string[]
-            {
-                "####################",
-                "#............#.....#",
-                "#........P...#...#.#",
-                "#............#...#.#",
-                "#............#...#.#",
-                "#............#####.#",
-                "#....#.............#",
-                "#....#.............#",
-                "#....####.......####",
-                "#.........###......#",
-                "#.......#.###......#",
-                "#.......#..........#",
-                "#..................#",
-                "#...........#......#",
-                "####################"
-            };
+            string[] map = System.IO.File.ReadAllLines(@"Levels/Level0.txt");
+
             for (int y = 0; y < map.Length; y++)
             {
                 for (int x = 0; x < map[y].Length; x++)
                 {
                     if (map[y][x] == 'P') _hackMan = new HackMan(x, y);
-                    else if (map[y][x] == '.') _food.Add(new Food(x, y)); //many wallllllllz neeeeeeeeded
+                    else if (map[y][x] == '.') _food.Add(new Food(x, y));
+                    else if (map[y][x] == '#') _wall.Add(new Wall(x, y));
                 }
             }
         }
@@ -84,6 +71,10 @@ namespace GameHackMan
 
             // TODO: use this.Content to load your game content here
             _hackMan.LoadContent(Content);      //we have to give some kind of value to method, so since that object is the whole game we give the method itself, in this case this
+            foreach (var w in _wall)
+            {
+                w.LoadContent(Content);
+            }
             foreach (var f in _food)
             {
                 f.LoadContent(Content);
@@ -126,6 +117,10 @@ namespace GameHackMan
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
+            foreach (var w in _wall)
+            {
+                w.Draw(_spriteBatch);
+            }
             foreach (var f in _food)
             {
                 f.Draw(_spriteBatch);
