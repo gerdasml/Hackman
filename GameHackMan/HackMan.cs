@@ -25,6 +25,19 @@ namespace GameHackMan
         private int _speed = 1;
 
         /// <summary>
+        /// Here is a property that returns a rectangle which surounds our object.
+        /// It will be needed for the moethod CheckCollisions() in class Game1
+        /// </summary>
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                Rectangle rectangle = new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE);
+                return rectangle;
+            }
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public HackMan(int x, int y)

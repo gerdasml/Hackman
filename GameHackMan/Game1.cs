@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace GameHackMan
@@ -18,6 +19,7 @@ namespace GameHackMan
         public static readonly int TILE_SIZE = 40;
         private List<Food> _food;
         private List<Wall> _wall;
+        private int _points = 0;
 
         public Game1()
         {
@@ -102,6 +104,7 @@ namespace GameHackMan
 
             // TODO: Add your update logic here
             _hackMan.Update();
+            CheckCollisions();
 
             base.Update(gameTime);
         }
@@ -127,8 +130,22 @@ namespace GameHackMan
             }
             _hackMan.Draw(_spriteBatch);
             _spriteBatch.End();
-    
+
             base.Draw(gameTime);
+        }
+
+        private void CheckCollisions()
+        {
+            foreach (var f in _food)
+            {
+                if (f.BoundingBox.Intersects(_hackMan.BoundingBox))
+                {
+                    _food.Remove(f);
+                    _points++;
+                    Console.WriteLine(_points);
+                    break;
+                }
+            }
         }
     }
 }

@@ -13,7 +13,19 @@ namespace GameHackMan
     {
         private readonly Vector2 _position;
         private static Texture2D _texture;
-        
+
+        /// <summary>
+        /// Here is a property that returns a rectangle which surounds our object.
+        /// It will be needed for the moethod CheckCollisions() in class Game1
+        /// </summary>
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                Rectangle rectangle = new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE);
+                return rectangle;
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
