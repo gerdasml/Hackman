@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GameHackMan
 {
@@ -14,9 +15,14 @@ namespace GameHackMan
         private GraphicsDeviceManager _graphics;     //can change window size 
         private SpriteBatch _spriteBatch;        //will be used in the drawing {spriteBatch.Begin(); spriteBatch.Draw(); spriteBatch.Draw(); ..... spriteBatch.End();}
         private HackMan _hackMan;
-        public static readonly int SCREEN_HEIGHT = 600;
-        public static readonly int SCREEN_WIDTH = 800;
-        public static readonly int TILE_SIZE = 40;
+        private SpriteFont _font;
+        public static readonly int TILE_SIZE = 22;
+        public static readonly int SCREEN_HEIGHT = 484 + TILE_SIZE;
+        public static readonly int SCREEN_WIDTH = 506;
+        internal static CollisionChecker CollisionChecker { get; private set; }
+        private Stopwatch _watch;
+        private int _secondsAllowed = 60;
+
         private List<Food> _food;
         private List<Wall> _wall;
         private int _points = 0;
@@ -31,6 +37,7 @@ namespace GameHackMan
             _wall = new List<Wall>();
             _food = new List<Food>();
             ReadMap();
+            CollisionChecker = new CollisionChecker(_hackMan, _food, _wall);
         }
 
         private void ReadMap()
@@ -81,6 +88,7 @@ namespace GameHackMan
             {
                 f.LoadContent(Content);
             }
+            _font = Content.Load<SpriteFont>("Font");
         }
 
         /// <summary>
@@ -103,8 +111,15 @@ namespace GameHackMan
                 Exit();
 
             // TODO: Add your update logic here
+            if (_watch == null && (
+                Keyboard.GetState().IsKeyDown(Keys.Up) ||
+                Keyboard.GetState().IsKeyDown(Keys.Down) ||
+                Keyboard.GetState().IsKeyDown(Keys.Left) ||
+                Keyboard.GetState().IsKeyDown(Keys.Right)
+                ))
+                _watch = Stopwatch.StartNew();
             _hackMan.Update();
-            CheckCollisions();
+            _points += CollisionChecker.CheckFoodCollitions();
 
             base.Update(gameTime);
         }
@@ -129,23 +144,39 @@ namespace GameHackMan
                 f.Draw(_spriteBatch);
             }
             _hackMan.Draw(_spriteBatch);
+            DrawScore();
+            DrawTimeLeft();
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void CheckCollisions()
+        private void DrawScore()
         {
-            foreach (var f in _food)
-            {
-                if (f.BoundingBox.Intersects(_hackMan.BoundingBox))
-                {
-                    _food.Remove(f);
-                    _points++;
-                    Console.WriteLine(_points);
-                    break;
-                }
-            }
+            string resultString = "Score: " + _points.ToString();
+            var position = new Vector2(0, SCREEN_HEIGHT - TILE_SIZE);
+            Vector2 size = _font.MeasureString(resultString);
+            Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH, TILE_SIZE);
+            float xScale = boundaries.Width / size.X;
+            float yScale = boundaries.Height / size.Y;
+            float scale = Math.Min(xScale, yScale);
+            _spriteBatch.DrawString(_font, resultString, position, Color.Green, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+        }
+
+        private void DrawTimeLeft()
+        {
+            string resultString = "Time left: ";
+            if (_watch == null)
+                resultString += String.Format("{0:000}", _secondsAllowed);
+            else
+               resultString += String.Format("{0:000}", _secondsAllowed - _watch.ElapsedMilliseconds / 1000);
+            Vector2 size = _font.MeasureString(resultString);
+            Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH, TILE_SIZE);
+            float xScale = boundaries.Width / size.X;
+            float yScale = boundaries.Height / size.Y;
+            float scale = Math.Min(xScale, yScale);
+            var position = new Vector2(SCREEN_WIDTH - size.X * scale, SCREEN_HEIGHT - TILE_SIZE);
+            _spriteBatch.DrawString(_font, resultString, position, Color.Green, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
     }
 }

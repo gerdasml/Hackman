@@ -17,6 +17,18 @@ namespace GameHackMan
         /// <summary>
         /// 
         /// </summary>
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                Rectangle rectangle = new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE);
+                return rectangle;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Wall(int x, int y)
         {
             _position = new Vector2();

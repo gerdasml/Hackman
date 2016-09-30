@@ -14,6 +14,7 @@ namespace GameHackMan
     {
         enum Direction
         {
+            NONE,
             LEFT,
             RIGHT,
             UP,
@@ -23,6 +24,7 @@ namespace GameHackMan
         private Dictionary<Direction, Texture2D> _textures;
         private Vector2 _position;
         private int _speed = 1;
+        private Direction _previousDirection;
 
         /// <summary>
         /// Here is a property that returns a rectangle which surounds our object.
@@ -36,6 +38,8 @@ namespace GameHackMan
                 return rectangle;
             }
         }
+
+        
 
         /// <summary>
         /// Constructor
@@ -59,7 +63,8 @@ namespace GameHackMan
         {
             // TODO: Add your initialization logic here
             //_position = Vector2.Zero;        //position = new Vector2(0,0);
-            _direction = Direction.RIGHT;
+            _direction = Direction.NONE;
+            _previousDirection = Direction.NONE;
         }
 
         /// <summary>
@@ -73,6 +78,7 @@ namespace GameHackMan
             _textures.Add(Direction.LEFT, content.Load<Texture2D>("Hackman_left"));
             _textures.Add(Direction.UP, content.Load<Texture2D>("Hackman_up"));
             _textures.Add(Direction.DOWN, content.Load<Texture2D>("Hackman_down"));
+            _textures.Add(Direction.NONE, content.Load<Texture2D>("Hackman"));
         }
 
         /// <summary>
@@ -83,28 +89,36 @@ namespace GameHackMan
         public void Update()
         {
             // TODO: Add your update logic here
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) == true)
+            _previousDirection = _direction;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X, _position.Y - _speed)))
                 _direction = Direction.UP;
-            else if (Keyboard.GetState().IsKeyDown(Keys.Down) == true)
+            else if (Keyboard.GetState().IsKeyDown(Keys.Down) && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X, _position.Y + _speed)))
                 _direction = Direction.DOWN;
-            else if (Keyboard.GetState().IsKeyDown(Keys.Right) == true)
+            else if (Keyboard.GetState().IsKeyDown(Keys.Right) && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X + _speed, _position.Y)))
                 _direction = Direction.RIGHT;
-            else if (Keyboard.GetState().IsKeyDown(Keys.Left) == true)
+            else if (Keyboard.GetState().IsKeyDown(Keys.Left) && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X - _speed, _position.Y)))
                  _direction = Direction.LEFT;
 
-            if (_direction == Direction.UP)
+            Move();
+            Console.WriteLine("{0} {1}", _position.X, _position.Y);
+        }
+
+        private void Move ()
+        {
+            if (_direction == Direction.UP && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X, _position.Y - _speed)))
                 _position.Y -= _speed;
-            else if (_direction == Direction.DOWN)
+            else if (_direction == Direction.DOWN && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X, _position.Y + _speed)))
                 _position.Y += _speed;
-            else if (_direction == Direction.RIGHT)
+            else if (_direction == Direction.RIGHT && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X + _speed, _position.Y)))
                 _position.X += _speed;
-            else if (_direction == Direction.LEFT)
+            else if (_direction == Direction.LEFT && !Game1.CollisionChecker.IsPointInWall(new Vector2(_position.X - _speed, _position.Y)))
                 _position.X -= _speed;
 
-            if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH;
-            if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT;
-            if (_position.X > Game1.SCREEN_WIDTH) _position.X = 0;
-            if (_position.Y > Game1.SCREEN_HEIGHT) _position.Y = 0;
+            if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH-1;
+            if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT-1;
+            if (_position.X >= Game1.SCREEN_WIDTH) _position.X = 1;
+            if (_position.Y >= Game1.SCREEN_HEIGHT) _position.Y = 1;
         }
 
         /// <summary>
