@@ -21,7 +21,8 @@ namespace GameHackMan
         public static readonly int SCREEN_WIDTH = 506;
         internal static CollisionChecker CollisionChecker { get; private set; }
         private Stopwatch _watch;
-        private int _secondsAllowed = 60;
+        private int _secondsAllowed = 15;
+        private bool _isGameOver = false;
 
         private List<Food> _food;
         private List<Wall> _wall;
@@ -118,8 +119,17 @@ namespace GameHackMan
                 Keyboard.GetState().IsKeyDown(Keys.Right)
                 ))
                 _watch = Stopwatch.StartNew();
-            _hackMan.Update();
-            _points += CollisionChecker.CheckFoodCollitions();
+            if (_watch != null && _watch.ElapsedMilliseconds >= _secondsAllowed * 1000)
+            {
+                _isGameOver = true;
+                _watch.Stop();
+            }
+
+            if (!_isGameOver)
+            {
+                _hackMan.Update();
+                _points += CollisionChecker.CheckFoodCollitions();
+            }
 
             base.Update(gameTime);
         }
@@ -146,6 +156,9 @@ namespace GameHackMan
             _hackMan.Draw(_spriteBatch);
             DrawScore();
             DrawTimeLeft();
+            if (_isGameOver)
+                DrawDeathScreen();
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -167,9 +180,9 @@ namespace GameHackMan
         {
             string resultString = "Time left: ";
             if (_watch == null)
-                resultString += String.Format("{0:000}", _secondsAllowed);
+                resultString += String.Format("{0}:{1:00}", _secondsAllowed/60, _secondsAllowed % 60);
             else
-               resultString += String.Format("{0:000}", _secondsAllowed - _watch.ElapsedMilliseconds / 1000);
+               resultString += String.Format("{0}:{1:00}", (_secondsAllowed - _watch.ElapsedMilliseconds / 1000) / 60, (_secondsAllowed - _watch.ElapsedMilliseconds / 1000) % 60);
             Vector2 size = _font.MeasureString(resultString);
             Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH, TILE_SIZE);
             float xScale = boundaries.Width / size.X;
@@ -177,6 +190,22 @@ namespace GameHackMan
             float scale = Math.Min(xScale, yScale);
             var position = new Vector2(SCREEN_WIDTH - size.X * scale, SCREEN_HEIGHT - TILE_SIZE);
             _spriteBatch.DrawString(_font, resultString, position, Color.Green, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+        }
+
+        private void DrawDeathScreen()
+        {
+            Texture2D background = new Texture2D(GraphicsDevice, 1, 1);
+            background.SetData(new Color[] { Color.Black });
+            _spriteBatch.Draw(background, destinationRectangle: new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), color: new Color(Color.Black, 0.8f));
+
+            string gameOverString = "GAME OVER";
+            Vector2 size = _font.MeasureString(gameOverString);
+            Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH * 3 / 4, SCREEN_HEIGHT);
+            float xScale = boundaries.Width / size.X;
+            float yScale = boundaries.Height / size.Y;
+            float scale = Math.Min(xScale, yScale);
+            var position = new Vector2(SCREEN_WIDTH / 8, SCREEN_HEIGHT / 2 - size.Y * scale / 2);
+            _spriteBatch.DrawString(_font, gameOverString, position, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
     }
 }
