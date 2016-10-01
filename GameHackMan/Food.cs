@@ -40,7 +40,7 @@ namespace GameHackMan
         /// 
         /// </summary>
         /// <param name="content"></param>
-        public void LoadContent(ContentManager content)
+        public static void LoadContent(ContentManager content)
         {
             if (_texture == null) _texture = content.Load<Texture2D> ("Food");
         }

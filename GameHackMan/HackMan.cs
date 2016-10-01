@@ -21,7 +21,15 @@ namespace GameHackMan
             DOWN
         }
         private Direction _direction;
-        private Dictionary<Direction, Texture2D> _textures;
+        private static Dictionary<Direction, Texture2D> _textures = new Dictionary<Direction, Texture2D>();
+        // ^ sitas nebuvo static pries tai
+        /*vadinas jis priklause konkreciam objektui. todel kuriant vis nauja objekta, reiktu vis is naujo
+        i sita lauka uzkraut paveiksliukus
+
+            dabar kai yra padaryta static, tai sitas laukas bendras VISIEM SITOS KLASES objektam
+            todel nesvarbu kursi tu 1 ar 100 hackman objektu, visi jie dalinsis situo lauku
+
+        */
         private Vector2 _position;
         private int _speed = 1;
         private Direction _previousDirection;
@@ -46,39 +54,29 @@ namespace GameHackMan
         /// </summary>
         public HackMan(int x, int y)
         {
-            _textures = new Dictionary<Direction, Texture2D>();
             _position = new Vector2();
             _position.X = x * Game1.TILE_SIZE;
             _position.Y = y * Game1.TILE_SIZE;
-
-        }
-
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        public void Initialize()
-        {
-            // TODO: Add your initialization logic here
-            //_position = Vector2.Zero;        //position = new Vector2(0,0);
             _direction = Direction.NONE;
             _previousDirection = Direction.NONE;
         }
+
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
-        public void LoadContent(ContentManager content)       //since Content cannot be seen from class Game, so we have to give a perameter to fix this problem
+        public static void LoadContent(ContentManager content)       //since Content cannot be seen from class Game, so we have to give a perameter to fix this problem
         {
             // TODO: use this.Content to load your game content here
-            _textures.Add(Direction.RIGHT, content.Load<Texture2D>("Hackman_right"));
-            _textures.Add(Direction.LEFT, content.Load<Texture2D>("Hackman_left"));
-            _textures.Add(Direction.UP, content.Load<Texture2D>("Hackman_up"));
-            _textures.Add(Direction.DOWN, content.Load<Texture2D>("Hackman_down"));
-            _textures.Add(Direction.NONE, content.Load<Texture2D>("Hackman"));
+            if (_textures.Count == 0)
+            {
+                _textures.Add(Direction.RIGHT, content.Load<Texture2D>("Hackman_right"));
+                _textures.Add(Direction.LEFT, content.Load<Texture2D>("Hackman_left"));
+                _textures.Add(Direction.UP, content.Load<Texture2D>("Hackman_up"));
+                _textures.Add(Direction.DOWN, content.Load<Texture2D>("Hackman_down"));
+                _textures.Add(Direction.NONE, content.Load<Texture2D>("Hackman"));
+            }
         }
 
         /// <summary>
