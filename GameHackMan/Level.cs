@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GameHackMan
@@ -14,6 +15,8 @@ namespace GameHackMan
         private HackMan _hackMan;
         private List<Food> _food;
         private List<Wall> _wall;
+
+        private string _pattern = @"^[0-9]*\n([#\s\.P]{23}\n?){22}$";
 
         public HackMan HackMan
         {
@@ -47,6 +50,12 @@ namespace GameHackMan
             }
         }
 
+        private bool IsValidMap(string[] map)
+        {
+            string joinedMap = string.Join("\n", map);
+            return joinedMap.Split('P').Length - 1 == 1 && Regex.IsMatch(joinedMap, _pattern);
+        }
+
         public Level(string fileName)
         {
             _wall = new List<Wall>();
@@ -58,6 +67,7 @@ namespace GameHackMan
         {
 
             string[] map = System.IO.File.ReadAllLines(fileName); // ir tada is to failo skaitom
+            if (!IsValidMap(map)) throw new OperationCanceledException("Map in the file "+fileName+" is invalidas");
             //reikes validuot su regex cia
             TimeInSeconds = int.Parse(map[0]);   //konvertuojam is stringo i inta
             for (int y = 1; y < map.Length; y++)

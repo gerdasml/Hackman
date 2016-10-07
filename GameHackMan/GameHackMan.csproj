@@ -38,12 +38,15 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Block.cs" />
     <Compile Include="CollisionChecker.cs" />
     <Compile Include="Food.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Graphics.cs" />
     <Compile Include="HackMan.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="ListExtensions.cs" />
+    <Compile Include="MoveableBlock.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wall.cs" />

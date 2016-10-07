@@ -25,7 +25,6 @@ namespace GameHackMan
         private GraphicsDeviceManager _graphics;     //can change window size 
         private SpriteBatch _spriteBatch;        //will be used in the drawing {spriteBatch.Begin(); spriteBatch.Draw(); spriteBatch.Draw(); ..... spriteBatch.End();}
         private HackMan _hackMan;
-        private SpriteFont _font;
 
         public static readonly int TILE_SIZE = 22;
         public static readonly int SCREEN_HEIGHT = 484 + TILE_SIZE;
@@ -57,6 +56,10 @@ namespace GameHackMan
             _graphics.ApplyChanges();
             Content.RootDirectory = "Content";          //the place from wich i take all content for my game
             _levelFileNames = Directory.GetFiles(@"Levels", "*.txt");
+        }
+
+        private void LoadLevels()
+        {
             _levels = new List<Level>();
             foreach (var name in _levelFileNames)
             {
@@ -65,10 +68,10 @@ namespace GameHackMan
             _levels.Sort();
         }
 
-        
-
         private void StartGame(bool preservePoints = false) // pradedam nauja geima
         {
+            if (_levels == null)
+                LoadLevels();
             _wall = _levels[_currentlevel].Wall;
             _food = _levels[_currentlevel].Food;
             _hackMan = _levels[_currentlevel].HackMan;
@@ -102,11 +105,7 @@ namespace GameHackMan
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            HackMan.LoadContent(Content);      //we have to give some kind of value to method, so since that object is the whole game we give the method itself, in this case this
-            Wall.LoadContent(Content);
-            Food.LoadContent(Content);
-
-            _font = Content.Load<SpriteFont>("Font");
+            Graphics.Load(Content);
         }
 
         /// <summary>
@@ -293,12 +292,12 @@ namespace GameHackMan
         {
             string resultString = "Score: " + _points.ToString();
             var position = new Vector2(0, SCREEN_HEIGHT - TILE_SIZE);
-            Vector2 size = _font.MeasureString(resultString);
+            Vector2 size = Graphics.Font.MeasureString(resultString);
             Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH, TILE_SIZE);
             float xScale = boundaries.Width / size.X;
             float yScale = boundaries.Height / size.Y;
             float scale = Math.Min(xScale, yScale);
-            _spriteBatch.DrawString(_font, resultString, position, Color.DarkOliveGreen, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            _spriteBatch.DrawString(Graphics.Font, resultString, position, Color.DarkOliveGreen, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
 
         private void DrawTimeLeft()
@@ -308,13 +307,13 @@ namespace GameHackMan
                 resultString += String.Format("{0}:{1:00}", _secondsAllowed/60, _secondsAllowed % 60);
             else
                resultString += String.Format("{0}:{1:00}", (_secondsAllowed - _watch.ElapsedMilliseconds / 1000) / 60, (_secondsAllowed - _watch.ElapsedMilliseconds / 1000) % 60);
-            Vector2 size = _font.MeasureString(resultString);
+            Vector2 size = Graphics.Font.MeasureString(resultString);
             Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH, TILE_SIZE);
             float xScale = boundaries.Width / size.X;
             float yScale = boundaries.Height / size.Y;
             float scale = Math.Min(xScale, yScale);
             var position = new Vector2(SCREEN_WIDTH - size.X * scale, SCREEN_HEIGHT - TILE_SIZE);
-            _spriteBatch.DrawString(_font, resultString, position, Color.DarkOliveGreen, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            _spriteBatch.DrawString(Graphics.Font, resultString, position, Color.DarkOliveGreen, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
 
         private void DrawDeathScreen()
@@ -325,13 +324,13 @@ namespace GameHackMan
             _spriteBatch.Draw(background, destinationRectangle: new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), color: new Color(Color.Black, 0.8f));
 
             string gameOverString = "GAME OVER";
-            Vector2 size = _font.MeasureString(gameOverString);
+            Vector2 size = Graphics.Font.MeasureString(gameOverString);
             Rectangle boundaries = new Rectangle(0, 0, SCREEN_WIDTH * 3 / 4, SCREEN_HEIGHT);
             float xScale = boundaries.Width / size.X;
             float yScale = boundaries.Height / size.Y;
             float scale = Math.Min(xScale, yScale);
             var position = new Vector2(SCREEN_WIDTH / 8, SCREEN_HEIGHT / 2 - size.Y * scale / 2);
-            _spriteBatch.DrawString(_font, gameOverString, position, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            _spriteBatch.DrawString(Graphics.Font, gameOverString, position, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
 
         private void DrawMenu()
@@ -403,12 +402,12 @@ namespace GameHackMan
 
         private void MakingThingsHappen(string text, Rectangle boundaries, Color color)
         {
-            Vector2 size = _font.MeasureString(text);
+            Vector2 size = Graphics.Font.MeasureString(text);
             float xScale = boundaries.Width / size.X;
             float yScale = boundaries.Height / size.Y;
             float scale = Math.Min(xScale, yScale);
             var position = new Vector2(boundaries.X, boundaries.Y);
-            _spriteBatch.DrawString(_font, text, position, color, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            _spriteBatch.DrawString(Graphics.Font, text, position, color, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         }
         #endregion
     }
