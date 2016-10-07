@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GameHackMan
 {
-    class HackMan
+    class HackMan : ICloneable
     {
         enum Direction
         {
@@ -114,9 +114,9 @@ namespace GameHackMan
                 _position.X -= _speed;
 
             if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH-1;
-            if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT-1;
+            if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT - Game1.TILE_SIZE -1;
             if (_position.X >= Game1.SCREEN_WIDTH) _position.X = 1;
-            if (_position.Y >= Game1.SCREEN_HEIGHT) _position.Y = 1;
+            if (_position.Y >= Game1.SCREEN_HEIGHT - Game1.TILE_SIZE) _position.Y = 1;
         }
 
         /// <summary>
@@ -127,6 +127,11 @@ namespace GameHackMan
         {
             // TODO: Add your drawing code here
             spriteBatch.Draw(_textures[_direction], destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE));
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

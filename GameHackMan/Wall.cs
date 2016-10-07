@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameHackMan
 {
-    class Wall
+    class Wall : ICloneable
     {
         private readonly Vector2 _position;
         private static Texture2D _texture;
@@ -52,6 +52,11 @@ namespace GameHackMan
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE));
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }
