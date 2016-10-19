@@ -38,26 +38,32 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Block.cs" />
+    <Compile Include="Entities\Block.cs" />
     <Compile Include="CollisionChecker.cs" />
-    <Compile Include="Food.cs" />
+    <Compile Include="Entities\Food.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Game1.Draw.cs" />
-    <Compile Include="Game1.Update.cs" />
+    <Compile Include="Game1.Draw.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Game1.Update.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ghost.cs" />
     <Compile Include="Graphics.cs" />
-    <Compile Include="HackMan.cs" />
+    <Compile Include="Entities\HackMan.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="ListExtensions.cs" />
-    <Compile Include="MoveableBlock.cs" />
+    <Compile Include="Entities\MoveableBlock.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wall.cs" />
+    <Compile Include="Entities\Wall.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +87,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Levels\Level7.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Levels\Level8.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

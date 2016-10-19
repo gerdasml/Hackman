@@ -1,14 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GameHackMan
+namespace GameHackMan.Entities
 {
     class HackMan : MoveableBlock
     {
@@ -24,6 +17,11 @@ namespace GameHackMan
             _texture[Direction.RIGHT] = Graphics.HackManRight;
             _texture[Direction.NONE] = Graphics.HackManFront;
             _speed = 1;
+        }
+
+        public void MakeTrololo()
+        {
+            _speed = -1;
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace GameHackMan
                  _direction = Direction.LEFT;
 
             Move();
-            Console.WriteLine("{0} {1}", _position.X, _position.Y);
         }
+        
     }
 }

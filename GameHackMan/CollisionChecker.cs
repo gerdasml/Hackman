@@ -1,23 +1,32 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using GameHackMan.Entities;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameHackMan
 {
-    class CollisionChecker
+    //[2]
+    struct CollisionChecker
     {
         private HackMan _hackMan;
+        private List<Ghost> _ghost;
         private List<Food> _food;
         private List<Wall> _wall;
 
-        public CollisionChecker(HackMan hackMan, List<Food> food, List<Wall> wall)
+        public CollisionChecker(HackMan hackMan, List<Ghost> ghost, List<Food> food, List<Wall> wall)
         {
             _hackMan = hackMan;
+            _ghost = ghost;
             _food = food;
             _wall = wall;
+        }
+
+        public bool IsHackmanDead()
+        {
+            foreach (var g in _ghost)
+            {
+                if (g.BoundingBox.Intersects(_hackMan.BoundingBox)) return true;
+            }
+            return false;
         }
 
         public bool IsPointInWall(Vector2 point)
@@ -38,9 +47,6 @@ namespace GameHackMan
                 {
                     _food.Remove(f);
                     return 1;
-                    //_points++;
-                    //Console.WriteLine(_points);
-                    //break;
                 }
             }
             return 0;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
 
 namespace GameHackMan
@@ -11,7 +12,7 @@ namespace GameHackMan
 
 
             // TODO: Add your update logic here
-            if (_cooldownWatch == null)
+            if (_cooldownWatch == null)         //if game ended or we reached some kind of state
             {
                 if (_state == State.MENU)
                     UpdateMenu();
@@ -24,7 +25,7 @@ namespace GameHackMan
                 else if (_state == State.VICTORY)
                     UpdateVictory();
             }
-            else if ((int)_cooldownWatch.ElapsedMilliseconds >= _cooldownInMilliseconds)
+            else if ((int)_cooldownWatch.ElapsedMilliseconds >= _cooldownInMilliseconds)            //if time ended for the game 
                 _cooldownWatch = null;
 
             base.Update(gameTime);
@@ -43,32 +44,66 @@ namespace GameHackMan
             {
                 SwitchStateTo(State.GAMEOVER);
                 _watch.Stop();
+                return;
             }
-
-            if (_state == State.GAME)
-            {
-                _hackMan.Update();
-                _points += CollisionChecker.CheckFoodCollitions();
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) // o cia reiktu kazkaip sustabdyt geima. kad tipo jei isejom i meniu tj vsio, nebegtu laikas ir pan.
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
             {
                 SwitchStateTo(State.MENU);
             }
+            //===============================================
+
+            if(Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                UpdateSecret();
+            }
+
+            if(Keyboard.GetState().IsKeyDown(Keys.T))
+            {
+                UpdateTime();
+            }
+
+            
+
+            //===============================================
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                SwitchStateTo(State.PAUSE);
-                _watch.Stop();
+                if (_watch == null) SwitchStateTo(State.PAUSE);
+                else
+                {
+                    SwitchStateTo(State.PAUSE);
+                    _watch.Stop();
+                }
             }
+
+            if (_watch == null) return;
+
+            _hackMan.Update();
+            foreach (var g in _ghost)
+            {
+                g.Update();
+            }
+            if (!Keyboard.GetState().IsKeyDown(Keys.I))
+            {
+                if (CollisionChecker.IsHackmanDead())
+                {
+                    _state = State.GAMEOVER;
+                    _watch.Stop();
+                    return;
+                }
+            }
+            _points += CollisionChecker.CheckFoodCollitions();
+            _highScore = Math.Max(_points, _highScore);
+
 
             if (_food.Count == 0)
             {
+                _points += (int)(_levels[_currentlevel].TimeInSeconds - _watch.ElapsedMilliseconds / 1000) * BONUS_POINTS_MULTIPLIER;
                 _currentlevel++; // cia
                 if (_currentlevel < _levelFileNames.Length)
                 {
                     SwitchStateTo(State.GAME);
-                    StartGame(preservePoints: true);
+                    StartGame(preservePoints: true);        //if game isn't over then calculate points continiously
                 }
                 else
                 {
@@ -76,10 +111,22 @@ namespace GameHackMan
                     _watch.Stop();
                 }
             }
-
-
-
         }
+        //===================================================
+
+        private void UpdateSecret()
+        {
+            SwitchStateTo(State.GAME);
+            _currentlevel = 7;
+            StartGame();
+        }
+
+        private void UpdateTime()
+        {
+            _watch.Stop();
+        }
+
+        //====================================================
 
         private void UpdateVictory()
         {
@@ -97,10 +144,14 @@ namespace GameHackMan
         private void UpdateMenu()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                WriteHighScore();
                 Exit();
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
                 SwitchStateTo(State.GAME); // cia reiktu kokio nors ResetGame() metodo. kad tipo kai pradedam nauja geima kad viskas butu is naujo
+                _currentlevel = 0;
                 StartGame();
             }
         }
@@ -119,10 +170,14 @@ namespace GameHackMan
 
         private void UpdatePause()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) && _state == State.PAUSE)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                SwitchStateTo(State.GAME); // anksciau busena keitem tiesiog taip. db keisim SwitchStateTo(State.GAME);
-                _watch.Start();
+                if (_watch == null) SwitchStateTo(State.GAME);
+                else
+                {
+                    SwitchStateTo(State.GAME);
+                    _watch.Stop();
+                }
             }
         }
 

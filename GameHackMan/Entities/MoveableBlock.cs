@@ -1,12 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GameHackMan
+namespace GameHackMan.Entities
 {
     abstract class MoveableBlock : Block
     {
@@ -46,9 +42,26 @@ namespace GameHackMan
                 _position.X -= _speed;
 
             if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH - 1;
-            if (_position.Y < 0) _position.Y = Game1.SCREEN_HEIGHT - Game1.TILE_SIZE - 1;
+            if (_position.Y < Game1.TILE_SIZE) _position.Y = Game1.SCREEN_HEIGHT - Game1.TILE_SIZE - 1;
             if (_position.X >= Game1.SCREEN_WIDTH) _position.X = 1;
-            if (_position.Y >= Game1.SCREEN_HEIGHT - Game1.TILE_SIZE) _position.Y = 1;
+            if (_position.Y >= Game1.SCREEN_HEIGHT - Game1.TILE_SIZE) _position.Y = Game1.TILE_SIZE;
+        }
+
+        protected void MoveGhost()
+        {
+            if (_direction == Direction.UP)
+                _position.Y -= _speed;
+            else if (_direction == Direction.DOWN)
+                _position.Y += _speed;
+            else if (_direction == Direction.RIGHT)
+                _position.X += _speed;
+            else if (_direction == Direction.LEFT)
+                _position.X -= _speed;
+
+            if (_position.X < 0) _position.X = Game1.SCREEN_WIDTH - 1;
+            if (_position.Y < Game1.TILE_SIZE) _position.Y = Game1.SCREEN_HEIGHT - Game1.TILE_SIZE - 1;
+            if (_position.X >= Game1.SCREEN_WIDTH) _position.X = 1;
+            if (_position.Y >= Game1.SCREEN_HEIGHT - Game1.TILE_SIZE) _position.Y = Game1.TILE_SIZE;
         }
 
         public abstract void Update();

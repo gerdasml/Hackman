@@ -1,23 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GameHackMan
+namespace GameHackMan.Entities
 {
+    //[13]
     abstract class Block : ICloneable
     {
         protected Vector2 _position;
         protected Texture2D _texture;
+        protected Color _color = Color.White;
 
         public Rectangle BoundingBox
         {
             get
             {
+                //[10-siaurinanti]
                 Rectangle rectangle = new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE);
                 return rectangle;
             }
@@ -32,12 +30,12 @@ namespace GameHackMan
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE));
+            spriteBatch.Draw(_texture, destinationRectangle: new Rectangle((int)_position.X, (int)_position.Y, Game1.TILE_SIZE, Game1.TILE_SIZE), color: _color);
         }
 
         public object Clone()
         {
-            return MemberwiseClone();
+            return MemberwiseClone();       //shallow cloning
         }
     }
 }
